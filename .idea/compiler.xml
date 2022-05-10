@@ -7,10 +7,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="order-management" />
         <module name="shared-kernel" />
         <module name="product-catalog" />
-        <module name="ddd-product-ordering" />
-        <module name="order-management" />
       </profile>
     </annotationProcessing>
   </component>
