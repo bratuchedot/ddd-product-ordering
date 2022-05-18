@@ -1,5 +1,6 @@
 package mk.ukim.finki.emt.productcatalog.domain.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import lombok.Getter;
 import mk.ukim.finki.emt.productcatalog.domain.valueobjects.Quantity;
 import mk.ukim.finki.emt.sharedkernel.domain.base.AbstractEntity;
@@ -15,9 +16,6 @@ public class Product extends AbstractEntity<ProductId> {
     private String productName;
 
     private int sales = 0;
-
-//    @Embedded
-//    private Quantity quantity;
 
     @Embedded
     @AttributeOverrides({
@@ -45,9 +43,4 @@ public class Product extends AbstractEntity<ProductId> {
     public void removeSales(int qty) {
         this.sales = this.sales - qty;
     }
-
-//    public Quantity getQuantity() {
-//        return quantity;
-//    }
-
 }

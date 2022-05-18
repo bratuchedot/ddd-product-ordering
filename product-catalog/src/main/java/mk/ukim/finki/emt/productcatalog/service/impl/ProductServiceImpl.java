@@ -3,7 +3,7 @@ package mk.ukim.finki.emt.productcatalog.service.impl;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.emt.productcatalog.domain.models.Product;
 import mk.ukim.finki.emt.productcatalog.domain.models.ProductId;
-import mk.ukim.finki.emt.productcatalog.domain.models.exceptions.ProductNotFoundException;
+import mk.ukim.finki.emt.productcatalog.domain.exceptions.ProductNotFoundException;
 import mk.ukim.finki.emt.productcatalog.domain.repository.ProductRepository;
 import mk.ukim.finki.emt.productcatalog.service.ProductService;
 import mk.ukim.finki.emt.productcatalog.service.forms.ProductForm;
@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product orderItemCreated(ProductId productId, int quantity) {
-        Product product = this.findById(productId);
+        Product product = this.productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
         product.addSales(quantity);
         this.productRepository.saveAndFlush(product);
         return product;
@@ -41,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product orderItemRemoved(ProductId productId, int quantity) {
-        Product product = this.findById(productId);
+        Product product = this.productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
         product.removeSales(quantity);
         this.productRepository.saveAndFlush(product);
         return product;

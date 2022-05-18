@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 @Getter
 public class Quantity implements ValueObject {
+
     private final int quantity;
 
     protected Quantity() {

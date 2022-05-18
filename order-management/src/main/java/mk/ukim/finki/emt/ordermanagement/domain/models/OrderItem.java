@@ -24,6 +24,10 @@ public class OrderItem extends AbstractEntity<OrderItemId> {
     @AttributeOverride(name = "id", column = @Column(name = "product_id", nullable = false))
     private ProductId productId;
 
+    private OrderItem() {
+        super(DomainObjectId.randomId(OrderItemId.class));
+    }
+
     public OrderItem(@NonNull ProductId productId, @NonNull Money itemPrice, int qty) {
         super(DomainObjectId.randomId(OrderItemId.class));
         this.productId = productId;
