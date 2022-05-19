@@ -10,6 +10,8 @@ import mk.ukim.finki.emt.ordermanagement.domain.repository.OrderRepository;
 import mk.ukim.finki.emt.ordermanagement.service.OrderService;
 import mk.ukim.finki.emt.ordermanagement.service.forms.OrderForm;
 import mk.ukim.finki.emt.ordermanagement.service.forms.OrderItemForm;
+import mk.ukim.finki.emt.sharedkernel.domain.events.orders.OrderItemCreated;
+import mk.ukim.finki.emt.sharedkernel.infra.DomainEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
+    private final DomainEventPublisher domainEventPublisher;
+
     private final Validator validator;
 
     @Override
@@ -37,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
             throw new ConstraintViolationException("The order form is not valid", constraintViolations);
         }
         var newOrder = orderRepository.saveAndFlush(toDomainObject(orderForm));
+        newOrder.getOrderItemList().forEach(item -> this.domainEventPublisher.publish(new OrderItemCreated(item.getProductId().getId(), item.getQuantity())));
         return newOrder.getId();
     }
 
@@ -54,6 +59,7 @@ public class OrderServiceImpl implements OrderService {
     public void addItem(OrderId orderId, OrderItemForm orderItemForm) throws OrderIdNotExistsException {
         Order order = this.orderRepository.findById(orderId).orElseThrow(OrderIdNotExistsException::new);
         order.addItem(orderItemForm.getProduct(), orderItemForm.getQuantity());
+        this.domainEventPublisher.publish(new OrderItemCreated(orderItemForm.getProduct().getId().getId(), orderItemForm.getQuantity()));
         this.orderRepository.saveAndFlush(order);
     }
 
@@ -61,6 +67,7 @@ public class OrderServiceImpl implements OrderService {
     public void deleteItem(OrderId orderId, OrderItemId orderItemId) throws OrderIdNotExistsException, OrderItemIdNotExistsException {
         Order order = this.orderRepository.findById(orderId).orElseThrow(OrderIdNotExistsException::new);
         order.removeItem(orderItemId);
+        //TODO: domainEventPublisher -> OrderItemRemoved
         this.orderRepository.saveAndFlush(order);
     }
 
