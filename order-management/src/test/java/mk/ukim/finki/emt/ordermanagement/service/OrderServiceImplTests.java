@@ -57,7 +57,27 @@ public class OrderServiceImplTests {
     @Test
     public void testPlaceOrderWithRealData() {
         List<Product> productList = productClient.findAll();
-        System.out.println(productList);
+//        System.out.println(productList);
+        Product p1 = productList.get(0);
+        Product p2 = productList.get(1);
+
+        OrderItemForm oi1 = new OrderItemForm();
+        oi1.setProduct(p1);
+        oi1.setQuantity(1);
+
+        OrderItemForm oi2 = new OrderItemForm();
+        oi2.setProduct(p2);
+        oi2.setQuantity(2);
+
+        OrderForm orderForm = new OrderForm();
+        orderForm.setCurrency(Currency.MKD);
+        orderForm.setItems(Arrays.asList(oi1,oi2));
+
+        OrderId newOrderId = orderService.placeOrder(orderForm);
+        Order newOrder = orderService.findById(newOrderId).orElseThrow(OrderIdNotExistsException::new);
+
+        Money outMoney = p1.getPrice().multiply(oi1.getQuantity()).add(p2.getPrice().multiply(oi2.getQuantity()));
+        Assertions.assertEquals(newOrder.total(),outMoney);
     }
 }
 
